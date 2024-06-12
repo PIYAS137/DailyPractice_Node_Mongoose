@@ -2,6 +2,8 @@ import express,{NextFunction, Request,Response} from 'express'
 import cors from 'cors'
 import { middlewares } from './middlewares/customMid'
 import router from './Router'
+import Route_Not_Found from './errors/RouteNotFound'
+import Global_Error_Handler from './errors/GlobalErrorHanlder'
 export {middlewares} from './middlewares/customMid'
 
 
@@ -12,7 +14,7 @@ app.use(express.json())
 app.use(cors())
 
 
-app.use('/api/vi',router)
+app.use('/api/v1',router)
 
 
 
@@ -28,23 +30,10 @@ app.get('/',middlewares.myMiddleware,(req:Request,res:Response,next:NextFunction
 })
 
 // route not found 
-
-app.use("*",(req:Request,res:Response,next:NextFunction)=>{
-    res.status(404).json({
-        success : false,
-        message : "Route not found !"
-    })
-})
+app.use("*",Route_Not_Found)
 
 // global Error handler 
-app.use((error:any,req:Request,res:Response,next:NextFunction)=>{
-    if(error){
-        res.status(500).json({
-            success : false,
-            message : error.message || "There is an server side error !"
-        })
-    }
-})
+app.use(Global_Error_Handler)
 
 
 export default app;

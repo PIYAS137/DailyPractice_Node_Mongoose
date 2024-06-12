@@ -21,6 +21,11 @@ const User_Schema = new Schema<User_Type>({
         type : User_Name_Schema,
         required : [true, "Name is requred *"]
     },
+    email : {
+        type :String,
+        unique :true,
+        required : [true, "Email is very required *"]
+    },
     age : {
         type : Number,
         required : [true, "Age is required *"]
@@ -44,6 +49,10 @@ const User_Schema = new Schema<User_Type>({
     toJSON : {
         virtuals : true
     }
+})
+
+User_Schema.virtual('fullName').get(function(){
+    return `${this.name.f_name} ${this.name.m_name} ${this.name.l_name}`
 })
 
 export const User_Model = model<User_Type>('User',User_Schema);
