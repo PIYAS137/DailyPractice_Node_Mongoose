@@ -3,7 +3,7 @@ import { z } from 'zod';
 // Define the schema for Name_Type
 const Zod_Name_Type = z.object({
     f_name: z.string(),
-    m_name: z.string(),
+    m_name: z.string().optional(),
     l_name: z.string(),
 });
 
@@ -19,4 +19,27 @@ const Zod_User_Type = z.object({
     })
 });
 
-export { Zod_Name_Type, Zod_User_Type };
+
+const UPDATE_Zod_Name_Type = z.object({
+    f_name: z.string().optional(),
+    m_name: z.string().optional(),
+    l_name: z.string().optional(),
+});
+
+// Define the schema for User_Type
+const UPDATE_Zod_User_Type = z.object({
+    body: z.object({
+        name: UPDATE_Zod_Name_Type,
+        email : z.string().optional(),
+        age: z.number().int().min(0).optional(),
+        phone: z.string().optional(),
+        gender: z.enum(['male', 'female', 'other']).optional(),
+        dateOfBirth: z.string().optional()
+    })
+});
+
+
+
+
+
+export { Zod_User_Type,UPDATE_Zod_User_Type };

@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { Name_Type, User_Type } from "./user.interface";
+import { Name_Type, User_Custom_Static_Method, User_Type } from "./user.interface";
 
 const User_Name_Schema = new Schema<Name_Type>({
     f_name : {
@@ -16,7 +16,7 @@ const User_Name_Schema = new Schema<Name_Type>({
     
 })
 
-const User_Schema = new Schema<User_Type>({
+const User_Schema = new Schema<User_Type,User_Custom_Static_Method>({
     name : {
         type : User_Name_Schema,
         required : [true, "Name is requred *"]
@@ -46,13 +46,23 @@ const User_Schema = new Schema<User_Type>({
         required : [true, "Date of Birth is required *"]
     }
 },{
+    timestamps :true,
     toJSON : {
         virtuals : true
     }
 })
 
 User_Schema.virtual('fullName').get(function(){
-    return `${this.name.f_name} ${this.name.m_name} ${this.name.l_name}`
+    if(this.name.m_name){
+        return `${this.name.f_name} ${this.name.m_name} ${this.name.l_name}`
+    }else{
+        return `${this.name.f_name}${this.name.m_name?this.name.m_name:''} ${this.name.l_name}`
+    }
 })
 
-export const User_Model = model<User_Type>('User',User_Schema);
+User_Schema.statics.isUserExist= async function (id:string) {
+    const isUserExistById = await User_Model.findById(id);
+    return isUserExistById;
+}
+
+export const User_Model = model<User_Type,User_Custom_Static_Method>('User',User_Schema);
