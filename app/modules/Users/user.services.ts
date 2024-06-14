@@ -1,64 +1,55 @@
-import { User_Type } from "./user.interface";
+import Final_App_Error from "../../errors/FinalAppError";
+import { Teacher_Type } from "../Teachers/teacher.interface";
+import { Teacher_Model } from "../Teachers/teacher.model";
+import { Get_Data_Type, User_Type } from "./user.interface";
 import { User_Model } from "./user.model";
 
 
-// Create a user
-const Create_New_User_Service = async (data: User_Type) => {
-    const result = await User_Model.create(data);
-    return result;
-}
 
-// Get all users
-const Get_All_User = async () => {
-    const result = await User_Model.find();
-    return result;
-}
 
-//Get one user 
-const Get_One_User = async (id: string) => {
-    const isExist = await User_Model.isUserExist(id);
-    if(!isExist){
-        throw new Error("User is not exist anymore *")
+
+// Create Teacher Service 
+const Create_Teacher_Service = async(data : Get_Data_Type)=>{
+
+    const isExist = await User_Model.isUserExistByEmail(data.user.email);
+    if(isExist){
+        throw new Final_App_Error(500,"Already Exist User by Email *")
     }
-    const result = await User_Model.find({ _id: id });
-    return result;
-}
 
-// User upate 
-const User_Update_Service = async (uid: string, ud: User_Type) => {
-    const isExist = await User_Model.isUserExist(uid);
-    if(!isExist){
-        throw new Error("User is not exist anymore *")
-    }
-    const updatedDoc = {
-        $set: {
-            "name.f_name": ud.name.f_name,
-            "name.m_name": ud.name.m_name,
-            "name.l_name": ud.name.l_name,
-            age: ud.age,
-            phone: ud.phone,
-            gender: ud.gender,
-            dateOfBirth: ud.dateOfBirth
+    let user : User_Type = {
+        name: {
+            f_name: data.user.name.f_name as string,
+            m_name: data.user.name.m_name || undefined,
+            l_name: data.user.name.l_name
+        },
+        age: data.user.age,
+        email: data.user.email,
+        phone: data.user.phone,
+        gender: data.user.gender,
+        dateOfBirth: data.user.dateOfBirth
+    };
+
+    const newUser = await User_Model.create(user);
+
+    const tid = "TEACHER_0001"
+
+    if(Object.keys(newUser).length){
+        const teacher : Teacher_Type = {
+            user : newUser._id,
+            department : data.department,
+            salary : data.salary,
+            t_id : tid
         }
+        const result = await Teacher_Model.create(teacher);
+        return result;
     }
-    const result = await User_Model.findOneAndUpdate({ _id: uid }, updatedDoc, { new: true });
-    return result;
-}
 
-// Delete user service 
-const Delete_User_Service = async (uid: string) => {
-    const isExist = await User_Model.isUserExist(uid);
-    if(!isExist){
-        throw new Error("User is not exist anymore *")
-    }
-    const result = await User_Model.findOneAndDelete({ _id: uid });
-    return result;
-}
+    
 
+
+
+}
 export const User_Services = {
-    Create_New_User_Service,
-    Get_All_User,
-    Get_One_User,
-    User_Update_Service,
-    Delete_User_Service
+    Create_Teacher_Service,
+    
 }

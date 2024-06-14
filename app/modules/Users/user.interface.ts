@@ -16,6 +16,13 @@ export type User_Type = {
     dateOfBirth : string //13 May 2003
 }
 
+export type Get_Data_Type = {
+    user : User_Type,
+    department : 'CSE'|'CIS'|'SWE'|'ICT'|'MCT',
+    salary : string
+}
+
 export interface User_Custom_Static_Method extends Model<User_Type>{
-    isUserExist(id:string):Promise<User_Type|null>
+    isUserExist(id:string):Promise<User_Type|null>,
+    isUserExistByEmail(email:string):Promise<string|null>,
 }

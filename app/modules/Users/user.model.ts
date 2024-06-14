@@ -5,7 +5,7 @@ const User_Name_Schema = new Schema<Name_Type>({
     f_name : {
         type : String,
         required : [true,"First name is requred *"]
-    },
+    }, 
     m_name : {
         type : String,
     },
@@ -65,4 +65,12 @@ User_Schema.statics.isUserExist= async function (id:string) {
     return isUserExistById;
 }
 
+User_Schema.statics.isUserExistByEmail = async function (email:string){
+    const isExist = await User_Model.findOne({email:email});
+    return isExist;
+}
+
+
+
 export const User_Model = model<User_Type,User_Custom_Static_Method>('User',User_Schema);
+
