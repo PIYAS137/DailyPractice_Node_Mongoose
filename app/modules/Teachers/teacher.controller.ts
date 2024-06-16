@@ -23,9 +23,25 @@ const Get_One_Teacher = asyncCatch(async (req: Request, res: Response, next: Nex
     })
 })
 
+const Update_Teacher_Controller=asyncCatch(async(req:Request,res:Response,next:NextFunction)=>{
+    const tid = req.params.tid;
+    console.log(tid);
+    const gettedData = req.body;
+    console.log(gettedData);
+    const result = await Teacher_Services.Update_Teacher_Service(tid,gettedData);
+    res.status(200).json({
+        success:true,
+        message : "Successfully Update A Teacher",
+        data : result
+    })
+})
+
+
+
 
 export const Teacher_Controller = {
     Get_All_Teacher,
     Get_One_Teacher,
+    Update_Teacher_Controller,
     
 }

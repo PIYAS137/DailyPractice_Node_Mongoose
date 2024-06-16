@@ -1,3 +1,4 @@
+import { Teacher_Type } from "./teacher.interface";
 import { Teacher_Model } from "./teacher.model"
 
 
@@ -13,9 +14,20 @@ const Get_One_Teacher_Service=async(tid:string)=>{
     return data;
 }
 
+// update a teacher_services
+const Update_Teacher_Service=async(tid:string,updatedData:Partial<Teacher_Type>)=>{
+    const {...remainingPremitiveData}=updatedData;
+
+    const modifiedUpdatedData:Record<string,unknown>={
+        ...remainingPremitiveData
+    }
+
+    const result = await Teacher_Model.findByIdAndUpdate({_id:tid},modifiedUpdatedData,{new:true});
+    return result;
+}
 
 export const Teacher_Services = {
     Get_Teacher_Services,
     Get_One_Teacher_Service,
-
+    Update_Teacher_Service
 }
