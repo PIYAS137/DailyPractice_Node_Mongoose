@@ -60,6 +60,7 @@ User_Schema.virtual('fullName').get(function(){
     }
 })
 
+
 User_Schema.statics.isUserExist= async function (id:string) {
     const isUserExistById = await User_Model.findById(id);
     return isUserExistById;

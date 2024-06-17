@@ -52,7 +52,7 @@ const Delete_Teacher_Service = async (tid: string) => {
     } catch (error) {
         session.abortTransaction();
         session.endSession()
-        throw new Final_App_Error(400, "There is an problem in process - Transaction and rollback *")
+        throw new Final_App_Error(500, "There is an problem in process - Transaction and rollback *")
 
     }
 
