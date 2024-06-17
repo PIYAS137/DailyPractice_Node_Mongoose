@@ -13,50 +13,56 @@ import { User_Model } from "./user.model";
 
 // Create Teacher Service 
 const Create_Teacher_Service = async (data: Get_Data_Type) => {
-    const session = await mongoose.startSession();
-    try {
+
+    const isExist = await User_Model.isUserExistByEmail(data.user.email);
+    if (isExist) {
+        throw new Final_App_Error(500, "Already Exist User by Email *")
+    }
+
+    let user: User_Type = {
+        name: {
+            f_name: data.user.name.f_name as string,
+            m_name: data.user.name.m_name || undefined,
+            l_name: data.user.name.l_name
+        },
+        age: data.user.age,
+        email: data.user.email,
+        phone: data.user.phone,
+        gender: data.user.gender,
+        dateOfBirth: data.user.dateOfBirth
+    };
+    const tid = "TEACHER_0001"
+
+    const session = await mongoose.startSession()
+    try{
         session.startTransaction();
-        const isExist = await User_Model.isUserExistByEmail(data.user.email);
-        if (isExist) {
-            throw new Final_App_Error(500, "Already Exist User by Email *")
+        const newUser = await User_Model.create([user],{session});
+        if(!newUser.length){
+            throw new Final_App_Error(400,"User not created !")
         }
-        let user: User_Type = {
-            name: {
-                f_name: data.user.name.f_name as string,
-                m_name: data.user.name.m_name || undefined,
-                l_name: data.user.name.l_name
-            },
-            age: data.user.age,
-            email: data.user.email,
-            phone: data.user.phone,
-            gender: data.user.gender,
-            dateOfBirth: data.user.dateOfBirth
-        };
-        const newUser = await User_Model.create([user], { session });
-        const tid = "TEACHER_0001"
-        if (Object.keys(newUser).length) {
-            const teacher: Teacher_Type = {
-                user: newUser[0]._id,
-                department: data.department,
-                salary: data.salary,
-                t_id: tid
-            }
-            const result = await Teacher_Model.create([teacher], { session });
-            await session.commitTransaction();
-            await session.endSession();
-            return result;
+        const teacher: Teacher_Type = {
+            user: newUser[0]._id,
+            department: data.department,
+            salary: data.salary,
+            t_id: tid
         }
-    } catch (err) {
+        const result = await Teacher_Model.create([teacher],{session});
+        if(!result.length){
+            throw new Final_App_Error(400,"Teacher not created !")
+        }
+        await session.commitTransaction();
+        await session.endSession();
+        return result;
+    }catch(err:any){
         await session.abortTransaction();
         await session.endSession();
-        throw new Final_App_Error(500, "There is an problem in process - Transaction and rollback *")
+        throw new Error(err)
+
     }
 }
 // Create Student Service 
 const Create_Student_Service = async (data: Get_Student_Data_Type) => {
-    const session = await mongoose.startSession();
-    try {
-        session.startTransaction();
+
         const isExist = await User_Model.isUserExistByEmail(data.user.email);
         if (isExist) {
             throw new Final_App_Error(500, "Already Exist User by Email *")
@@ -73,6 +79,10 @@ const Create_Student_Service = async (data: Get_Student_Data_Type) => {
             gender: data.user.gender,
             dateOfBirth: data.user.dateOfBirth
         };
+
+        const session = await mongoose.startSession();
+        try {
+            session.startTransaction();
         const newUser = await User_Model.create([user], { session });
         const s_id = "Student_0001"
         if (Object.keys(newUser).length) {
@@ -88,10 +98,10 @@ const Create_Student_Service = async (data: Get_Student_Data_Type) => {
             await session.endSession();
             return result;
         }
-    } catch (err) {
+    } catch (err: any) {
         await session.abortTransaction();
         await session.endSession();
-        throw new Final_App_Error(400, "There is an problem in process - Transaction and rollback *");
+        throw new Final_App_Error(400, err.message || "There is an problem in process - Transaction and rollback *");
     }
 }
 

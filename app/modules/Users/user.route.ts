@@ -6,7 +6,9 @@ import { Zod_Student_Schema } from '../Students/student.zod.validation';
 
 const router = express.Router();
 
-router.post('/teacher',Zod_Validation_Request(Zod_Teacher_Schema),User_Controller.Create_Teacher_Controller)
+router.post('/teacher',
+// Zod_Validation_Request(Zod_Teacher_Schema),
+User_Controller.Create_Teacher_Controller)
 router.post('/student',Zod_Validation_Request(Zod_Student_Schema),User_Controller.Create_Student_Controller)
 
 

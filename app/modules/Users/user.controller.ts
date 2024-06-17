@@ -19,6 +19,7 @@ const Create_Teacher_Controller=asyncCatch(async(req:Request,res:Response,next:N
 // Create Student 
 const Create_Student_Controller=asyncCatch(async(req:Request,res:Response,next:NextFunction)=>{
     const data : Get_Student_Data_Type = req.body;
+    console.log(data);
     const result = await User_Services.Create_Student_Service(data);
     res.status(200).json({
         success: true,

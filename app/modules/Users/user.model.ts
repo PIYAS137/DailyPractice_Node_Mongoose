@@ -39,7 +39,8 @@ const User_Schema = new Schema<User_Type,User_Custom_Static_Method>({
         enum : {
             values : ['male','female','other'],
             message : '{VALUE} is not supported for gender *'
-        }
+        },
+        required : [true,"valie is very required"]
     },
     dateOfBirth : {
         type : String,
