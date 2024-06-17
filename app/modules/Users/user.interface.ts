@@ -1,4 +1,4 @@
-import { Model } from "mongoose"
+import { Model, Types } from "mongoose"
 
 
 export type Name_Type = {
@@ -20,6 +20,11 @@ export type Get_Data_Type = {
     user : User_Type,
     department : 'CSE'|'CIS'|'SWE'|'ICT'|'MCT',
     salary : string
+}
+export type Get_Student_Data_Type = {
+    user : User_Type,
+    department : 'CSE'|'CIS'|'SWE'|'ICT'|'MCT',
+    advisor : Types.ObjectId,
 }
 
 export interface User_Custom_Static_Method extends Model<User_Type>{

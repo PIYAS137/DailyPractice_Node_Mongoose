@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
-import { Teacher_Type } from "./teacher.interface";
+import { Custom_Teacher_Method, Teacher_Type } from "./teacher.interface";
 
-const Teacher_Schema = new Schema<Teacher_Type>({
+const Teacher_Schema = new Schema<Teacher_Type,Custom_Teacher_Method>({
     user : {
         type : Schema.Types.ObjectId,
         required : [true, "User id is very required *"],
@@ -25,6 +25,11 @@ const Teacher_Schema = new Schema<Teacher_Type>({
     }
 })
 
+Teacher_Schema.statics.isTeacherExist = async function (tid:string){
+    const teacher = await Teacher_Model.findById({_id:tid});
+    return teacher;
+}
 
-export const Teacher_Model = model<Teacher_Type>('Teacher',Teacher_Schema);
+
+export const Teacher_Model = model<Teacher_Type,Custom_Teacher_Method>('Teacher',Teacher_Schema);
 

@@ -9,6 +9,4 @@ const asyncCatch=(fn:RequestHandler)=>{
 
 
 
-
-
 export default asyncCatch;
