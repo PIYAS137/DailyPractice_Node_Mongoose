@@ -13,6 +13,10 @@ const Get_Teacher_Services = async () => {
 
 // get one teacher service 
 const Get_One_Teacher_Service = async (tid: string) => {
+    // const isExist = await Teacher_Model.findById({_id:tid});
+    // if (!isExist) {
+    //     throw new Final_App_Error(404, "Teacher not found !");
+    // }
     const data = await Teacher_Model.findById({ _id: tid }).populate('user');
     return data;
 }
@@ -40,11 +44,11 @@ const Delete_Teacher_Service = async (tid: string) => {
             if (!isUserExist) {
                 throw new Final_App_Error(404, "User does not exist in database *")
             } else {
-                const deleteUser = await User_Model.findOneAndDelete({ _id: isExist.user },{session});
-                const deleteTeacher = await Teacher_Model.findOneAndDelete({ _id: tid },{session});
+                const deleteUser = await User_Model.findOneAndDelete({ _id: isExist.user }, { session });
+                const deleteTeacher = await Teacher_Model.findOneAndDelete({ _id: tid }, { session });
                 session.commitTransaction()
                 session.endSession()
-                return {deleteTeacher,deleteUser};
+                return { deleteTeacher, deleteUser };
             }
         } else {
             throw new Final_App_Error(404, "Teacher does not exist in database *")
@@ -52,7 +56,7 @@ const Delete_Teacher_Service = async (tid: string) => {
     } catch (error) {
         session.abortTransaction();
         session.endSession()
-        throw new Final_App_Error(500, "There is an problem in process - Transaction and rollback *")
+        throw error;
 
     }
 

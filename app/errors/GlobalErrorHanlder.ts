@@ -1,20 +1,21 @@
-import { Request, Response, NextFunction } from "express";
+import { ErrorRequestHandler } from "express";
 import mongoose from "mongoose";
 import { ZodError, ZodIssue } from "zod";
+import Final_App_Error from "./FinalAppError";
 
 type Error_Type = {
     path: string | number,
     message: string
 }[]
 
-const Global_Error_Handler = (error: any, req: Request, res: Response, next: NextFunction) => {
+const Global_Error_Handler: ErrorRequestHandler = (err, req, res, next) => {
+    let statusCode = 500;
 
-
-    let errorTitle = error.message || "There is an server side error *";
+    let errorTitle = "There is an server side error *";
     let errorSource: Error_Type = [
         {
             path: '',
-            message: 'There is an server side error *'
+            message: ''
         }
     ]
 
@@ -29,41 +30,82 @@ const Global_Error_Handler = (error: any, req: Request, res: Response, next: Nex
         return { zodErrorTitle, errorSource }
     }
 
-    const MongooseValidationError=(error:mongoose.Error.ValidationError)=>{
+    const MongooseValidationError = (error: mongoose.Error.ValidationError) => {
         const MongooseErrorTitle = "Mongoose Validation Error"
-        const errorSource:Error_Type = Object.values(error.errors).map((val:mongoose.Error.ValidatorError|mongoose.Error.CastError)=>{
+        const errorSource: Error_Type = Object.values(error.errors).map((val: mongoose.Error.ValidatorError | mongoose.Error.CastError) => {
             return {
-                path : val?.path,
-                message : val.message
+                path: val?.path,
+                message: val.message
             }
         })
         return {
             MongooseErrorTitle,
             errorSource
-        } 
+        }
     }
 
-    if (error instanceof ZodError) {
-        const gettedErrorFormat = Zod_Error_Handler(error);
+    const DuplicateMongooseError = (error: any) => {
+        const regex = /{ email: "([^"]+)" }/;
+        const match = error.errorResponse.errmsg.match(regex);
+        const finalString = match[1];
+        const Error_Source: Error_Type = [{
+            path: '',
+            message: `${finalString} is already exist into the record *`
+        }]
+        const ErrorTitle = "Duplicate Property Found *"
+        return { Error_Source, ErrorTitle }
+    }
+
+    const MongooseCastError = (error: mongoose.Error.CastError) => {
+        const ErrorTitle = "Reference Not Found Error *";
+        const ErrorSource: Error_Type = [{
+            path: error.path,
+            message: error.message
+        }]
+        return { ErrorTitle, ErrorSource }
+    }
+
+
+
+
+    if (err instanceof ZodError) {
+        const gettedErrorFormat = Zod_Error_Handler(err);
         errorTitle = gettedErrorFormat.zodErrorTitle;
         errorSource = gettedErrorFormat.errorSource
-    }else if(error.name==="ValidationError"){
-        const gettedErrorFormat = MongooseValidationError(error);
+    } else if (err.name === "ValidationError") {
+        const gettedErrorFormat = MongooseValidationError(err);
         errorTitle = gettedErrorFormat.MongooseErrorTitle;
         errorSource = gettedErrorFormat.errorSource
+    } else if (err.code === 11000) {
+        const gettedErrorFormat = DuplicateMongooseError(err);
+        errorTitle = gettedErrorFormat.ErrorTitle;
+        errorSource = gettedErrorFormat.Error_Source
+    } else if (err.name === 'CastError') {
+        const gettedErrorFormat = MongooseCastError(err);
+        errorTitle = gettedErrorFormat.ErrorTitle;
+        errorSource = gettedErrorFormat.ErrorSource
+    } else if (err instanceof Final_App_Error) {
+        errorTitle = err.message,
+            errorSource = [{
+                path: '',
+                message: err.message
+            }]
+    } else if (err instanceof Error) {
+        errorTitle = err.message,
+            errorSource = [{
+                path: '',
+                message: err.message
+            }]
     }
 
 
 
 
-
-    return res.status(error?.statusCode | 500).json({
+    return res.status(statusCode).json({
         success: false,
         errorTitle: errorTitle,
         errorSource: errorSource,
-        stack: error.stack,
-        error
-
+        stack: err.stack,
     })
 }
 

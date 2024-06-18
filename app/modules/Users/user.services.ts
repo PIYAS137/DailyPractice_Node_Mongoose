@@ -14,10 +14,6 @@ import { User_Model } from "./user.model";
 // Create Teacher Service 
 const Create_Teacher_Service = async (data: Get_Data_Type) => {
 
-    const isExist = await User_Model.isUserExistByEmail(data.user.email);
-    if (isExist) {
-        throw new Final_App_Error(500, "Already Exist User by Email *")
-    }
 
     let user: User_Type = {
         name: {
@@ -32,41 +28,35 @@ const Create_Teacher_Service = async (data: Get_Data_Type) => {
         dateOfBirth: data.user.dateOfBirth
     };
     const tid = "TEACHER_0001"
-
-    const session = await mongoose.startSession()
-    try{
-        session.startTransaction();
-        const newUser = await User_Model.create([user],{session});
-        if(!newUser.length){
+        const session = await mongoose.startSession();
+        try{
+            session.startTransaction();
+        
+        const newUser = await User_Model.create(user);
+        if(!newUser){
             throw new Final_App_Error(400,"User not created !")
         }
         const teacher: Teacher_Type = {
-            user: newUser[0]._id,
+            user: newUser._id,
             department: data.department,
             salary: data.salary,
             t_id: tid
         }
-        const result = await Teacher_Model.create([teacher],{session});
-        if(!result.length){
+        const result = await Teacher_Model.create(teacher);
+        if(!result){
             throw new Final_App_Error(400,"Teacher not created !")
         }
         await session.commitTransaction();
-        await session.endSession();
+        await session.endSession()
         return result;
-    }catch(err:any){
+    }catch(err:any){ 
         await session.abortTransaction();
         await session.endSession();
-        throw new Error(err)
-
+        throw err;
     }
 }
 // Create Student Service 
 const Create_Student_Service = async (data: Get_Student_Data_Type) => {
-
-        const isExist = await User_Model.isUserExistByEmail(data.user.email);
-        if (isExist) {
-            throw new Final_App_Error(500, "Already Exist User by Email *")
-        }
         let user: User_Type = {
             name: {
                 f_name: data.user.name.f_name as string,

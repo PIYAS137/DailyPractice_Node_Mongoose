@@ -1,5 +1,7 @@
 import { model, Schema } from "mongoose";
 import { Name_Type, User_Custom_Static_Method, User_Type } from "./user.interface";
+import { NextFunction } from "express";
+import Final_App_Error from "../../errors/FinalAppError";
 
 const User_Name_Schema = new Schema<Name_Type>({
     f_name : {
@@ -67,10 +69,19 @@ User_Schema.statics.isUserExist= async function (id:string) {
     return isUserExistById;
 }
 
-User_Schema.statics.isUserExistByEmail = async function (email:string){
-    const isExist = await User_Model.findOne({email:email});
-    return isExist;
+User_Schema.statics.isExistUserByEmail= async function (email:string) {
+    const isUserExistById = await User_Model.findById({email:email});
+    return isUserExistById;
 }
+
+
+// User_Schema.pre('save',async function (next){
+//     const isExistUserByEmail = await User_Model.findOne({email : this.email});
+//     if(isExistUserByEmail){
+//         throw new Final_App_Error(400,"This email is already exist into the database *");
+//     }
+//     next()
+// })
 
 
 
