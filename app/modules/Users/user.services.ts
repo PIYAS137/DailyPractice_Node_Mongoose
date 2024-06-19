@@ -31,18 +31,17 @@ const Create_Teacher_Service = async (data: Get_Data_Type) => {
         const session = await mongoose.startSession();
         try{
             session.startTransaction();
-        
-        const newUser = await User_Model.create(user);
+        const newUser = await User_Model.create([user],{session});
         if(!newUser){
             throw new Final_App_Error(400,"User not created !")
         }
         const teacher: Teacher_Type = {
-            user: newUser._id,
+            user: newUser[0]._id,
             department: data.department,
             salary: data.salary,
             t_id: tid
         }
-        const result = await Teacher_Model.create(teacher);
+        const result = await Teacher_Model.create([teacher],{session});
         if(!result){
             throw new Final_App_Error(400,"Teacher not created !")
         }

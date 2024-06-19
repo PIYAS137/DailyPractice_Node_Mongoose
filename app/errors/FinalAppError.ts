@@ -1,6 +1,7 @@
 
 
 
+
 class Final_App_Error extends Error {
     public statusCode : number;
     constructor(statusCode:number,message:string,stack=''){

@@ -1,7 +1,6 @@
 import { model, Schema } from "mongoose";
 import { Name_Type, User_Custom_Static_Method, User_Type } from "./user.interface";
-import { NextFunction } from "express";
-import Final_App_Error from "../../errors/FinalAppError";
+
 
 const User_Name_Schema = new Schema<Name_Type>({
     f_name : {

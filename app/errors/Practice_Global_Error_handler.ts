@@ -1,111 +1,44 @@
-import { ErrorRequestHandler } from "express";
-import mongoose from "mongoose";
-import { ZodError, ZodIssue } from "zod";
-import Final_App_Error from "./FinalAppError";
+// let tempQuery = {...query};
 
-type Error_Type = {
-    path: string | number,
-    message: string
-}[]
+//     let search :string = ''
+//     if(query?.search){
+//         search = query?.search as string;
+//     }
+//     const tagProperty = ['department','t_id','salary'];
 
-const Global_Error_Handler: ErrorRequestHandler = (err, req, res, next) => {
-    let statusCode = 500;
-
-    let errorTitle = "There is an server side error *";
-    let errorSource: Error_Type = [
-        {
-            path: '',
-            message: ''
-        }
-    ]
-
-    const Zod_Error_Handler = (error: ZodError) => {
-        const zodErrorTitle = "Zod Validation Error *";
-        const errorSource: Error_Type = error.issues.map((one: ZodIssue) => {
-            return {
-                path: one.path[one.path.length - 1],
-                message: one.message
-            }
-        })
-        return { zodErrorTitle, errorSource }
-    }
-
-    const MongooseValidationError = (error: mongoose.Error.ValidationError) => {
-        const MongooseErrorTitle = "Mongoose Validation Error"
-        const errorSource: Error_Type = Object.values(error.errors).map((val: mongoose.Error.ValidatorError | mongoose.Error.CastError) => {
-            return {
-                path: val?.path,
-                message: val.message
-            }
-        })
-        return {
-            MongooseErrorTitle,
-            errorSource
-        }
-    }
-
-    const DuplicateMongooseError = (error: any) => {
-        const regex = /{ email: "([^"]+)" }/;
-        const match = error.errorResponse.errmsg.match(regex);
-        const finalString = match[1];
-        const Error_Source: Error_Type = [{
-            path: '',
-            message: `${finalString} is already exist into the record *`
-        }]
-        const ErrorTitle = "Duplicate Property Found *"
-        return { Error_Source, ErrorTitle }
-    }
-
-    const MongooseCastError = (error: mongoose.Error.CastError) => {
-        const ErrorTitle = "Reference Not Found Error *";
-        const ErrorSource: Error_Type = [{
-            path: error.path,
-            message: error.message
-        }]
-        return { ErrorTitle, ErrorSource }
-    }
+//     let excludeField = ['search','sort','limit','page','select'];
+//     excludeField.forEach(one =>delete tempQuery[one])
 
 
+//     const searchingQuery =  Teacher_Model.find({
+//         $or:tagProperty.map(one=>({
+//             [one]:{$regex:search,$options:'i'}
+//         }))
+//     });
+//     let sort = '-createdAt';
+//     if(query?.sort){
+//         sort = query.sort as string;
+//     }
+//     const sortField = searchingQuery.sort(sort)
+//     let limit = 0 ;
+//     let page = 1 ;
+//     let skip = 0;
+//     if(query?.limit){
+//         limit = Number(query?.limit) ;
+//     }
+//     if(query?.page){
+//         page = Number(query?.page);
+//         skip = (page-1)*limit;
+//     }
+//     const limitWiseSearch = sortField.limit(limit);
+//     const pageWiseQuery = limitWiseSearch.skip(skip);
 
 
-    if (err instanceof ZodError) {
-        const gettedErrorFormat = Zod_Error_Handler(err);
-        errorTitle = gettedErrorFormat.zodErrorTitle;
-        errorSource = gettedErrorFormat.errorSource
-    } else if (err.name === "ValidationError") {
-        const gettedErrorFormat = MongooseValidationError(err);
-        errorTitle = gettedErrorFormat.MongooseErrorTitle;
-        errorSource = gettedErrorFormat.errorSource
-    } else if (err.code === 11000) {
-        const gettedErrorFormat = DuplicateMongooseError(err);
-        errorTitle = gettedErrorFormat.ErrorTitle;
-        errorSource = gettedErrorFormat.Error_Source
-    } else if (err.name === 'CastError') {
-        const gettedErrorFormat = MongooseCastError(err);
-        errorTitle = gettedErrorFormat.ErrorTitle;
-        errorSource = gettedErrorFormat.ErrorSource
-    } else if (err instanceof Final_App_Error) {
-        errorTitle = err.message,
-            errorSource = [{
-                path: '',
-                message: err.message
-            }]
-    } else if (err instanceof Error) {
-        errorTitle = err.message,
-            errorSource = [{
-                path: '',
-                message: err.message
-            }]
-    }
+//     let select = '';
+//     if(query?.select){
+//         select = (query?.select as string).split(',').join(' ');
+//     }
+    
+//     const selectWiseQuery = pageWiseQuery.select(select);
 
-
-
-
-    return res.status(statusCode).json({
-        success: false,
-        errorTitle: errorTitle,
-        errorSource: errorSource,
-        stack: err.stack,
-    })
-}
-
+//     const data = await selectWiseQuery.find(tempQuery);
