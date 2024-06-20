@@ -3,63 +3,25 @@ import { Teacher_Type } from "./teacher.interface";
 import { Teacher_Model } from "./teacher.model"
 import Final_App_Error from "../../errors/FinalAppError";
 import { User_Model } from "../Users/user.model";
+import Query_Builder from "../../Classes/Query.Builder";
+
 
 // get all teacher service
 const Get_Teacher_Services = async (query: Record<string, unknown>) => {
 
-    console.log(query);
-    const withOutPartialQuery = { ...query };
 
-    let search = '';
-    if (query?.search) {
-        search = query?.search as string;
-    }
+    const partialPropertyTags = ['t_id','department'];
 
-    const partialPropertiesTag = ['department', 't_id'];
-    const excludePropertiesTag = ['search', 'sort', 'limit', 'page','select']
+    const teacherQueryInstance = new Query_Builder(Teacher_Model.find(),query)
+    .filterQuery()
+    .pageQuery()
+    .searchQuery(partialPropertyTags)
+    .fieldLimit()
+    .sortQuery()
 
-    const searchQuery = Teacher_Model.find({
-        $or: partialPropertiesTag.map(one => ({
-            [one]: { $regex: search, $options: 'i' }
-        }))
-    });
+    const data = await teacherQueryInstance.modelQuery;
+    return data;
 
-    // exact properties 
-    excludePropertiesTag.forEach(one => delete withOutPartialQuery[one]);
-    console.log("exact----", withOutPartialQuery);
-
-
-    // limit query 
-    let limit = 0;
-    if (query?.limit) {
-        limit = Number(query?.limit);
-    }
-    const limitQuery = searchQuery.limit(limit);
-    // sort query 
-    let sort = '-createdAt';
-    if (query?.sort) {
-        sort = query?.sort as string;
-    }
-    const sortQuery = limitQuery.sort(sort);
-    // page query 
-    let page = 1;
-    let skip = 0;
-    if (query?.page) {
-        page = Number(query?.page);
-        skip = (page - 1) * limit;
-    }
-    const pageQuery = sortQuery.skip(skip)
-
-    // select query 
-    let select = '';
-    if(query?.select){
-        select = (query?.select as string).split(',').join(' ');
-    }
-    const selectQuery = pageQuery.select(select);
-
-
-    const data = await selectQuery.find(withOutPartialQuery);
-    return data
 }
 
 
