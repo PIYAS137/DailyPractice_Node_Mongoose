@@ -8,63 +8,58 @@ import { User_Model } from "../Users/user.model";
 const Get_Teacher_Services = async (query: Record<string, unknown>) => {
 
     console.log(query);
-
-    const exactFieldQuery = { ...query };
-    const partialFields = ['t_id', 'department'];
-
+    const withOutPartialQuery = { ...query };
 
     let search = '';
     if (query?.search) {
         search = query?.search as string;
     }
 
-    const excludeFields = ['search','limit','page','sort','select'];
-    excludeFields.forEach(one => delete exactFieldQuery[one]);
-    console.log("ex : ------", exactFieldQuery);
+    const partialPropertiesTag = ['department', 't_id'];
+    const excludePropertiesTag = ['search', 'sort', 'limit', 'page','select']
 
-
-
-
-
-    // partial search query 
-    const partialSearchQuery = Teacher_Model.find({
-        $or: partialFields.map((one) => ({
+    const searchQuery = Teacher_Model.find({
+        $or: partialPropertiesTag.map(one => ({
             [one]: { $regex: search, $options: 'i' }
         }))
-    })
+    });
 
-    // limit wise search query 
+    // exact properties 
+    excludePropertiesTag.forEach(one => delete withOutPartialQuery[one]);
+    console.log("exact----", withOutPartialQuery);
+
+
+    // limit query 
     let limit = 0;
-    if(query?.limit){
+    if (query?.limit) {
         limit = Number(query?.limit);
     }
-    const limitWiseSearchQuery = partialSearchQuery.limit(limit);
-
-    // page wise search query 
-    let page = 1;
-    let skip = 0;
-    if(query?.page){
-        page = Number(query?.page);
-        skip = (page-1)*limit;
-    }
-    const pageWiseSearchQuery = limitWiseSearchQuery.skip(skip)
-
-    // sort wise search query 
+    const limitQuery = searchQuery.limit(limit);
+    // sort query 
     let sort = '-createdAt';
-    if(query?.sort){
+    if (query?.sort) {
         sort = query?.sort as string;
     }
-    const sortWiseSearchQuery = pageWiseSearchQuery.sort(sort);
+    const sortQuery = limitQuery.sort(sort);
+    // page query 
+    let page = 1;
+    let skip = 0;
+    if (query?.page) {
+        page = Number(query?.page);
+        skip = (page - 1) * limit;
+    }
+    const pageQuery = sortQuery.skip(skip)
 
-    // field limiting wise search query 
+    // select query 
     let select = '';
     if(query?.select){
         select = (query?.select as string).split(',').join(' ');
     }
-    const fieldSelectWiseQuery = sortWiseSearchQuery.select(select);
+    const selectQuery = pageQuery.select(select);
 
-    const data = await fieldSelectWiseQuery.find(exactFieldQuery)
-    return data;
+
+    const data = await selectQuery.find(withOutPartialQuery);
+    return data
 }
 
 

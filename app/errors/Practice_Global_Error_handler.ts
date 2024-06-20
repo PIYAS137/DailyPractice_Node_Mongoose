@@ -1,44 +1,58 @@
-// let tempQuery = {...query};
 
-//     let search :string = ''
-//     if(query?.search){
-//         search = query?.search as string;
-//     }
-//     const tagProperty = ['department','t_id','salary'];
+// console.log(query);
 
-//     let excludeField = ['search','sort','limit','page','select'];
-//     excludeField.forEach(one =>delete tempQuery[one])
+// const exactFieldQuery = { ...query };
+// const partialFields = ['t_id', 'department'];
 
 
-//     const searchingQuery =  Teacher_Model.find({
-//         $or:tagProperty.map(one=>({
-//             [one]:{$regex:search,$options:'i'}
-//         }))
-//     });
-//     let sort = '-createdAt';
-//     if(query?.sort){
-//         sort = query.sort as string;
-//     }
-//     const sortField = searchingQuery.sort(sort)
-//     let limit = 0 ;
-//     let page = 1 ;
-//     let skip = 0;
-//     if(query?.limit){
-//         limit = Number(query?.limit) ;
-//     }
-//     if(query?.page){
-//         page = Number(query?.page);
-//         skip = (page-1)*limit;
-//     }
-//     const limitWiseSearch = sortField.limit(limit);
-//     const pageWiseQuery = limitWiseSearch.skip(skip);
+// let search = '';
+// if (query?.search) {
+//     search = query?.search as string;
+// }
+
+// const excludeFields = ['search','limit','page','sort','select'];
+// excludeFields.forEach(one => delete exactFieldQuery[one]);
+// console.log("ex : ------", exactFieldQuery);
 
 
-//     let select = '';
-//     if(query?.select){
-//         select = (query?.select as string).split(',').join(' ');
-//     }
-    
-//     const selectWiseQuery = pageWiseQuery.select(select);
 
-//     const data = await selectWiseQuery.find(tempQuery);
+
+
+// // partial search query 
+// const partialSearchQuery = Teacher_Model.find({
+//     $or: partialFields.map((one) => ({
+//         [one]: { $regex: search, $options: 'i' }
+//     }))
+// })
+
+// // limit wise search query 
+// let limit = 0;
+// if(query?.limit){
+//     limit = Number(query?.limit);
+// }
+// const limitWiseSearchQuery = partialSearchQuery.limit(limit);
+
+// // page wise search query 
+// let page = 1;
+// let skip = 0;
+// if(query?.page){
+//     page = Number(query?.page);
+//     skip = (page-1)*limit;
+// }
+// const pageWiseSearchQuery = limitWiseSearchQuery.skip(skip)
+
+// // sort wise search query 
+// let sort = '-createdAt';
+// if(query?.sort){
+//     sort = query?.sort as string;
+// }
+// const sortWiseSearchQuery = pageWiseSearchQuery.sort(sort);
+
+// // field limiting wise search query 
+// let select = '';
+// if(query?.select){
+//     select = (query?.select as string).split(',').join(' ');
+// }
+// const fieldSelectWiseQuery = sortWiseSearchQuery.select(select);
+
+// const data = await fieldSelectWiseQuery.find(exactFieldQuery)

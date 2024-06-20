@@ -9,7 +9,7 @@ const Get_All_Teacher = asyncCatch(async (req: Request, res: Response, next: Nex
     const result = await Teacher_Services.Get_Teacher_Services(query);
     res.status(200).json({
         success: true,
-        message: "Successfully Get Teachers",
+        message: "Successfully get teachers",
         data: result
     })
 })
