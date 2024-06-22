@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 import { Name_Type, User_Custom_Static_Method, User_Type } from "./user.interface";
-
+import bcrypt from 'bcrypt';
+import config from "../../config";
 
 const User_Name_Schema = new Schema<Name_Type>({
     f_name : {
@@ -68,6 +69,12 @@ User_Schema.virtual('fullName').get(function(){
     }else{
         return `${this.name.f_name}${this.name.m_name?this.name.m_name:''} ${this.name.l_name}`
     }
+})
+
+User_Schema.pre('save',async function(next){
+    const data = this;
+    data.pass = await bcrypt.hash(data.pass,Number(config.bsr));
+    next();
 })
 
 

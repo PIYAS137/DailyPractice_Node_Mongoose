@@ -86,7 +86,6 @@ const Create_Student_Service = async (data: Get_Student_Data_Type) => {
                 s_id: s_id
             }
             const result = await Student_Model.create([student], { session });
-
             await session.commitTransaction();
             await session.endSession();
             return result;
