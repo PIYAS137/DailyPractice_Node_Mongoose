@@ -9,6 +9,8 @@ export type Name_Type = {
 
 export type User_Type = {
     name : Name_Type,
+    id:string,
+    pass:string,
     age : number,
     email : string,
     phone : string,

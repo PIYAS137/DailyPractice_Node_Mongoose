@@ -22,6 +22,14 @@ const User_Schema = new Schema<User_Type,User_Custom_Static_Method>({
         type : User_Name_Schema,
         required : [true, "Name is requred *"]
     },
+    id:{
+        type : String,
+        required : [true, "Id is requred *"]
+    },
+    pass:{
+        type : String,
+        required : [true, "Id is requred *"]
+    },
     email : {
         type :String,
         unique :true,

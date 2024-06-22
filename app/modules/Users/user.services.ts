@@ -22,6 +22,8 @@ const Create_Teacher_Service = async (data: Get_Data_Type) => {
             l_name: data.user.name.l_name
         },
         age: data.user.age,
+        id : data.user.id,
+        pass:data.user.pass,
         email: data.user.email,
         phone: data.user.phone,
         gender: data.user.gender,
@@ -63,6 +65,8 @@ const Create_Student_Service = async (data: Get_Student_Data_Type) => {
                 l_name: data.user.name.l_name
             },
             age: data.user.age,
+            id : data.user.id,
+            pass:data.user.pass,
             email: data.user.email,
             phone: data.user.phone,
             gender: data.user.gender,

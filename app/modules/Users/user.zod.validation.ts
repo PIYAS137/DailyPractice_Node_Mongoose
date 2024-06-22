@@ -10,6 +10,8 @@ const Zod_Name_Type = z.object({
 // Define the schema for User_Type
 const Zod_User_Type = z.object({
     name: Zod_Name_Type,
+    id:z.string(),
+    pass:z.string(),
     email: z.string(),
     age: z.number().int().min(0),
     phone: z.string(),
@@ -28,6 +30,8 @@ const UPDATE_Zod_Name_Type = z.object({
 const UPDATE_Zod_User_Type = z.object({
     body: z.object({
         name: UPDATE_Zod_Name_Type,
+        id:z.string().optional(),
+        pass:z.string().optional(),
         email: z.string().optional(),
         age: z.number().int().min(0).optional(),
         phone: z.string().optional(),
