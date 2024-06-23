@@ -12,7 +12,7 @@ const Get_Teacher_Services = async (query: Record<string, unknown>) => {
 
     const partialPropertyTags = ['t_id','department'];
 
-    const teacherQueryInstance = new Query_Builder(Teacher_Model.find(),query)
+    const teacherQueryInstance = new Query_Builder(Teacher_Model.find().populate('user'),query)
     .filterQuery()
     .pageQuery()
     .searchQuery(partialPropertyTags)
