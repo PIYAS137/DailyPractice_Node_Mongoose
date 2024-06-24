@@ -15,7 +15,7 @@ import { User_Model } from "./user.model";
 const Create_Teacher_Service = async (data: Get_Data_Type) => {
 
 
-    let user: User_Type = {
+    let user: Partial<User_Type> = {
         name: {
             f_name: data.user.name.f_name as string,
             m_name: data.user.name.m_name || undefined,
@@ -29,6 +29,15 @@ const Create_Teacher_Service = async (data: Get_Data_Type) => {
         gender: data.user.gender,
         dateOfBirth: data.user.dateOfBirth
     };
+
+    const isExistByEmail = await User_Model.findOne({email : data.user.email});
+    if(isExistByEmail?.email === data.user.email){
+        throw new Final_App_Error(400, "This email is already in the database");
+    }
+
+
+
+
     const tid = "TEACHER_0001"
         const session = await mongoose.startSession();
         try{
@@ -58,7 +67,7 @@ const Create_Teacher_Service = async (data: Get_Data_Type) => {
 }
 // Create Student Service 
 const Create_Student_Service = async (data: Get_Student_Data_Type) => {
-        let user: User_Type = {
+        let user: Partial<User_Type> = {
             name: {
                 f_name: data.user.name.f_name as string,
                 m_name: data.user.name.m_name || undefined,
@@ -72,7 +81,11 @@ const Create_Student_Service = async (data: Get_Student_Data_Type) => {
             gender: data.user.gender,
             dateOfBirth: data.user.dateOfBirth
         };
-
+        const isExistByEmail = await User_Model.findOne({email : data.user.email});
+        if(isExistByEmail?.email === data.user.email){
+            throw new Final_App_Error(400, "This email is already in the database");
+        }
+    
         const session = await mongoose.startSession();
         try {
             session.startTransaction();

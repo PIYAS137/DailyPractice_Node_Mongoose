@@ -11,6 +11,8 @@ export type User_Type = {
     name : Name_Type,
     id:string,
     pass:string,
+    needPassChange:boolean,
+    passChangedAt?:Date,
     age : number,
     email : string,
     phone : string,
@@ -31,5 +33,5 @@ export type Get_Student_Data_Type = {
 
 export interface User_Custom_Static_Method extends Model<User_Type>{
     isUserExist(id:string):Promise<User_Type|null>,
-    isUserExistByEmail(email:string):Promise<string|null>,
+    isTokenValid(tokenIAT:number,passUAt:Date):boolean
 }
