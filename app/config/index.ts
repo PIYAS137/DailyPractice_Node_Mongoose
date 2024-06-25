@@ -8,5 +8,6 @@ export default {
     db_url : process.env.DB_URL,
     sds : process.env.SDS,
     bsr:process.env.SR,
-    jwt_secret:process.env.JWT_SECRET
+    jwt_secret:process.env.JWT_SECRET,
+    client_url : process.env.ClientURL
 }
