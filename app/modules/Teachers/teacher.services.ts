@@ -13,13 +13,12 @@ const Get_Teacher_Services = async (query: Record<string, unknown>) => {
     const partialPropertyTags = ['t_id','department'];
 
     const teacherQueryInstance = new Query_Builder(Teacher_Model.find().populate('user'),query)
-    .filterQuery()
-    .pageQuery()
     .searchQuery(partialPropertyTags)
-    .fieldLimit()
+    .filterQuery()
     .sortQuery()
-
-    const data = await teacherQueryInstance.modelQuery;
+    .pageQuery()
+    .fieldLimit()
+    const data = teacherQueryInstance.modelQuery;
     return data;
 
 }
