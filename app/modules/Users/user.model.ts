@@ -63,6 +63,9 @@ const User_Schema = new Schema<User_Type, User_Custom_Static_Method>({
     dateOfBirth: {
         type: String,
         required: [true, "Date of Birth is required *"]
+    },
+    profile: {
+        type : String,
     }
 }, {
     timestamps: true,

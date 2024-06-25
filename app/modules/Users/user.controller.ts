@@ -9,7 +9,8 @@ import { Get_Data_Type, Get_Student_Data_Type } from './user.interface';
 // Create Teacher 
 const Create_Teacher_Controller=asyncCatch(async(req:Request,res:Response,next:NextFunction)=>{
     const data : Get_Data_Type = req.body;
-    const result = await User_Services.Create_Teacher_Service(data);
+    const file = req.file;
+    const result = await User_Services.Create_Teacher_Service(data,file);
     res.status(200).json({
         success: true,
         message: "Successfully Create Teacher",

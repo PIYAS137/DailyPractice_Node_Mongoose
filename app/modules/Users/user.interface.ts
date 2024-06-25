@@ -17,7 +17,8 @@ export type User_Type = {
     email : string,
     phone : string,
     gender : 'male'|'female'|'other',
-    dateOfBirth : string //13 May 2003
+    dateOfBirth : string //13 May 2003,
+    profile?:string
 }
 
 export type Get_Data_Type = {

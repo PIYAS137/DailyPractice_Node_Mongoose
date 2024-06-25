@@ -6,13 +6,29 @@ import { Teacher_Type } from "../Teachers/teacher.interface";
 import { Teacher_Model } from "../Teachers/teacher.model";
 import { Get_Data_Type, Get_Student_Data_Type, User_Type } from "./user.interface";
 import { User_Model } from "./user.model";
+import { sendImageToCloudinary } from "../../utils/uploadImage";
 
 
 
 
 
 // Create Teacher Service 
-const Create_Teacher_Service = async (data: Get_Data_Type) => {
+const Create_Teacher_Service = async (data: Get_Data_Type,file:any) => {
+    
+    
+    
+    const isExistByEmail = await User_Model.findOne({email : data.user.email});
+    if(isExistByEmail?.email === data.user.email){
+        throw new Final_App_Error(400, "This email is already in the database");
+    }
+
+
+    // cloudinary 
+    const imageName = data.user.name.l_name;
+    const fileUrl = file.path;
+    const couldImage:any = await sendImageToCloudinary(imageName,fileUrl);
+
+
 
 
     let user: Partial<User_Type> = {
@@ -27,15 +43,11 @@ const Create_Teacher_Service = async (data: Get_Data_Type) => {
         email: data.user.email,
         phone: data.user.phone,
         gender: data.user.gender,
-        dateOfBirth: data.user.dateOfBirth
+        dateOfBirth: data.user.dateOfBirth,
+        profile:couldImage.secure_url,
     };
 
-    const isExistByEmail = await User_Model.findOne({email : data.user.email});
-    if(isExistByEmail?.email === data.user.email){
-        throw new Final_App_Error(400, "This email is already in the database");
-    }
-
-
+    console.log("====<>",user);
 
 
     const tid = "TEACHER_0001"
