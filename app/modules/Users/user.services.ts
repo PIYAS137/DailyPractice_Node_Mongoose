@@ -13,22 +13,23 @@ import { sendImageToCloudinary } from "../../utils/uploadImage";
 
 
 // Create Teacher Service 
-const Create_Teacher_Service = async (data: Get_Data_Type,file:any) => {
-    
-    
-    
-    const isExistByEmail = await User_Model.findOne({email : data.user.email});
-    if(isExistByEmail?.email === data.user.email){
+const Create_Teacher_Service = async (data: Get_Data_Type, file: any) => {
+
+
+
+    const isExistByEmail = await User_Model.findOne({ email: data.user.email });
+    if (isExistByEmail?.email === data.user.email) {
         throw new Final_App_Error(400, "This email is already in the database");
     }
 
-
-    // cloudinary 
-    const imageName = data.user.name.l_name;
-    const fileUrl = file.path;
-    const couldImage:any = await sendImageToCloudinary(imageName,fileUrl);
-
-
+    let cloudSecureUrl = ''
+    if (file) {
+        // cloudinary 
+        const imageName = data.user.name.l_name;
+        const fileUrl = file.path;
+        const couldImage: any = await sendImageToCloudinary(imageName, fileUrl);
+        cloudSecureUrl = couldImage.secure_url as string;
+    }
 
 
     let user: Partial<User_Type> = {
@@ -38,25 +39,25 @@ const Create_Teacher_Service = async (data: Get_Data_Type,file:any) => {
             l_name: data.user.name.l_name
         },
         age: data.user.age,
-        id : data.user.id,
-        pass:data.user.pass,
+        id: data.user.id,
+        pass: data.user.pass,
         email: data.user.email,
         phone: data.user.phone,
         gender: data.user.gender,
         dateOfBirth: data.user.dateOfBirth,
-        profile:couldImage.secure_url,
+        profile: cloudSecureUrl,
     };
 
-    console.log("====<>",user);
+    console.log("====<>", user);
 
 
     const tid = "TEACHER_0001"
-        const session = await mongoose.startSession();
-        try{
-            session.startTransaction();
-        const newUser = await User_Model.create([user],{session});
-        if(!newUser){
-            throw new Final_App_Error(400,"User not created !")
+    const session = await mongoose.startSession();
+    try {
+        session.startTransaction();
+        const newUser = await User_Model.create([user], { session });
+        if (!newUser) {
+            throw new Final_App_Error(400, "User not created !")
         }
         const teacher: Teacher_Type = {
             user: newUser[0]._id,
@@ -64,14 +65,14 @@ const Create_Teacher_Service = async (data: Get_Data_Type,file:any) => {
             salary: data.salary,
             t_id: tid
         }
-        const result = await Teacher_Model.create([teacher],{session});
-        if(!result){
-            throw new Final_App_Error(400,"Teacher not created !")
+        const result = await Teacher_Model.create([teacher], { session });
+        if (!result) {
+            throw new Final_App_Error(400, "Teacher not created !")
         }
         await session.commitTransaction();
         await session.endSession()
         return result;
-    }catch(err:any){ 
+    } catch (err: any) {
         await session.abortTransaction();
         await session.endSession();
         throw err;
@@ -79,28 +80,28 @@ const Create_Teacher_Service = async (data: Get_Data_Type,file:any) => {
 }
 // Create Student Service 
 const Create_Student_Service = async (data: Get_Student_Data_Type) => {
-        let user: Partial<User_Type> = {
-            name: {
-                f_name: data.user.name.f_name as string,
-                m_name: data.user.name.m_name || undefined,
-                l_name: data.user.name.l_name
-            },
-            age: data.user.age,
-            id : data.user.id,
-            pass:data.user.pass,
-            email: data.user.email,
-            phone: data.user.phone,
-            gender: data.user.gender,
-            dateOfBirth: data.user.dateOfBirth
-        };
-        const isExistByEmail = await User_Model.findOne({email : data.user.email});
-        if(isExistByEmail?.email === data.user.email){
-            throw new Final_App_Error(400, "This email is already in the database");
-        }
-    
-        const session = await mongoose.startSession();
-        try {
-            session.startTransaction();
+    let user: Partial<User_Type> = {
+        name: {
+            f_name: data.user.name.f_name as string,
+            m_name: data.user.name.m_name || undefined,
+            l_name: data.user.name.l_name
+        },
+        age: data.user.age,
+        id: data.user.id,
+        pass: data.user.pass,
+        email: data.user.email,
+        phone: data.user.phone,
+        gender: data.user.gender,
+        dateOfBirth: data.user.dateOfBirth
+    };
+    const isExistByEmail = await User_Model.findOne({ email: data.user.email });
+    if (isExistByEmail?.email === data.user.email) {
+        throw new Final_App_Error(400, "This email is already in the database");
+    }
+
+    const session = await mongoose.startSession();
+    try {
+        session.startTransaction();
         const newUser = await User_Model.create([user], { session });
         const s_id = "Student_0001"
         if (Object.keys(newUser).length) {

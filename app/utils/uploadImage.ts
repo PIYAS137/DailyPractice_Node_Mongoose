@@ -17,7 +17,7 @@ export const sendImageToCloudinary = (imageName: string, path: string) => {
                 if (error) {
                     reject(error);
                 }
-                resolve(result);
+                resolve(result );
                 // delete a file asynchronously
                 fs.unlink(path, (err) => {
                     if (err) {

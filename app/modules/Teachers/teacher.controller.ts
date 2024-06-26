@@ -5,11 +5,12 @@ import { Teacher_Services } from "./teacher.services";
 
 // Get All teacher 
 const Get_All_Teacher = asyncCatch(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await Teacher_Services.Get_Teacher_Services(req.query);
+    const {data,meta} = await Teacher_Services.Get_Teacher_Services(req.query);
     res.status(200).json({
         success: true,
         message: "Successfully get teachers",
-        data: result
+        meta,
+        data
     })
 })
 

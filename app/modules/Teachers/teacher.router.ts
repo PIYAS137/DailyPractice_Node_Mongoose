@@ -15,3 +15,5 @@ router.delete('/:tid',Teacher_Controller.Delete_Teacher_Controller)
 
 
 export const Teacher_Router = router;
+
+

@@ -18,8 +18,10 @@ const Get_Teacher_Services = async (query: Record<string, unknown>) => {
     .sortQuery()
     .pageQuery()
     .fieldLimit()
-    const data = teacherQueryInstance.modelQuery;
-    return data;
+    const data = await teacherQueryInstance.modelQuery;
+    const meta = await teacherQueryInstance.countTotalMETA();
+    return {data,meta};
+    // return data;
 
 }
 
