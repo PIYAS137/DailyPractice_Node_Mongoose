@@ -9,5 +9,6 @@ export default {
     sds : process.env.SDS,
     bsr:process.env.SR,
     jwt_secret:process.env.JWT_SECRET,
-    client_url : process.env.ClientURL
+    client_url : process.env.ClientURL,
+    mail_secret:process.env.MAIL_SECRET
 }

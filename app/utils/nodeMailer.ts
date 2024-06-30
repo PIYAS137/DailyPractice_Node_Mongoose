@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import config from '../config';
 
 
 export const SendEmail = async (to:string,html:string) => {
@@ -8,7 +9,7 @@ export const SendEmail = async (to:string,html:string) => {
         secure: false, // Use `true` for port 465, `false` for all other ports
         auth: {
             user: "piyasmahmudealif@gmail.com",
-            pass: "vcwe dubh rero xchu",
+            pass: config.mail_secret,
         },
     });
     await transporter.sendMail({
